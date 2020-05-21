@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.time.*;
 
+
 /**
  *
  * @author carlt
@@ -40,13 +41,13 @@ public class Javaclassapp2 {
       
      try 
       (
-       
+       //connecting to database
       Connection connection = DriverManager.getConnection(DATABASE_URL, "root", "admin"); 
       Statement statement = connection.createStatement();    
       ResultSet resultSet= statement.executeQuery(SELECT_QUERY))
          
      { ResultSetMetaData metaData= resultSet.getMetaData(); 
-     
+     //this enables the system to output data in columns
      int numberOfColumns= metaData.getColumnCount();     
      System.out.printf("Current details in the Database:%n%n");
      for (int i= 1; i<= numberOfColumns; i++) System.out.printf("%-8s\t", metaData.getColumnName(i)); 
@@ -57,12 +58,18 @@ public class Javaclassapp2 {
      System.out.println(); 
      
      
-     //collecting local date and time data
+     //collecting local date time and current day
         Date date=new Date();
+        Date now1 = new Date();
         LocalTime now = LocalTime.now();
         SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String formattedDate=dateFormat.format(date);
         System.out.println("The current time is: " + formattedDate);
+        
+        //CAPTURING CURRENT DAY OF THE WEEK SEPARATELY
+        SimpleDateFormat dayformat= new SimpleDateFormat("EEEE"); 
+        System.out.println(dayformat.format(now1));
+       
         
     //remember local time is referred to as now
               
@@ -79,32 +86,24 @@ public class Javaclassapp2 {
     
     if(now.isAfter(datemorning1) && now.isBefore(datemorning2)){
         period = "M";
+    System.out.println("Below is the information of the current class in that room");
        
     }
     if(now.isAfter(dateafternoon1) && now.isBefore(dateafternoon2)){
         period = "A";
-        
+    System.out.println("Below is the information of the current class in that room");    
     }
-    else
-            { 
-                System.out.println("No ongoing session at the moment"); 
-            } 
-     
-    
+
     System.out.println();
-    
-    System.out.println("Below is the information of the current class in that room");
-    
-    System.out.println();
-    
+
         
    //SELECT VIA USER INPUT
-        String mystmt = "select * from classinfo WHERE room = '"+ roomInput+"' AND period = '"+period+"' " ; 
+        String mystmt = "select * from classinfo WHERE room = '"+ roomInput+"' AND period = '"+period+"' AND day = '"+dayformat.format(now1)+"' " ; 
             ResultSet rest = statement.executeQuery(mystmt);
         
         if (rest.next()) 
             { 
-                System.out.println("Below is the information of the current class in that room");
+       //output objects         
                 System.out.println("");
                 System.out.println("room : " + rest.getString(1)); 
                 System.out.println("course_code :" + rest.getString(2));
@@ -113,8 +112,12 @@ public class Javaclassapp2 {
                 System.out.println("period :" + rest.getString(5));
                 System.out.println("semester :" + rest.getString(6));
                 System.out.println("year :" + rest.getString(7));
-            } 
-            
+                System.out.println("day :" + rest.getString(8));
+                
+            System.out.println("Dear Students, the " + rest.getString(3) + " class, at room " + rest.getString(1)+ " by " 
+                    + rest.getString(4)+ " is back in session " );
+            }
+      
      
      }
      }    
